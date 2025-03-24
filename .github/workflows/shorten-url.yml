@@ -4,6 +4,9 @@ on:
   repository_dispatch:
     types: [generate_redirect]
 
+permissions:
+  contents: write
+
 jobs:
   generate_redirect:
     runs-on: ubuntu-latest
