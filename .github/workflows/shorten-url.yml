@@ -1,0 +1,36 @@
+name: Shorten url
+
+on:
+  repository_dispatch:
+    types: [generate_redirect]
+
+jobs:
+  generate_redirect:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check API Key
+        run: |
+          if [ "${{ github.event.client_payload.key }}" != "${{ secrets.REDIRECT_SECRET }}" ]; then
+            echo "Invalid key"
+            exit 1
+          fi
+
+      - name: Checkout gh-pages branch
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+
+      - name: Generate file
+        run: |
+          FILE_NAME=${{ github.event.client_payload.id }}.html
+          URL=${{ github.event.client_payload.value }}
+          echo "<html><head><meta http-equiv=\"refresh\" content=\"0;url=$URL\" /></head></html>" > $FILE_NAME
+
+      - name: Commit and push
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+          git add .
+          git commit -m "Add redirect page to ${{ github.event.client_payload.value }}"
+          git push
