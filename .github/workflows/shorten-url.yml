@@ -36,4 +36,6 @@ jobs:
           git config --global user.email "github-actions@github.com"
           git add .
           git commit -m "Add redirect page to ${{ github.event.client_payload.value }}"
-          git push
+          git fetch origin
+          git rebase --strategy-option=theirs origin/main
+          git push --force
